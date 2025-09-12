@@ -1,4 +1,6 @@
 import { createBrowserRouter } from 'react-router';
+import { Navigate } from 'react-router-dom';
+
 import Index from '@/pages/index';
 import Home from '@/pages/home';
 import Verify from '@/pages/verify';
@@ -8,7 +10,7 @@ export const PATHS = {
     INDEX: '/',
     HOME: '/home',
     VERIFY: '/verify',
-    TIMEACTIVE: '/timeactive'
+    TIMEACTIVE: '/business-team' // ✅ Đổi từ /timeactive sang /business-team
 };
 
 const router = createBrowserRouter([
@@ -27,6 +29,11 @@ const router = createBrowserRouter([
     {
         path: `${PATHS.TIMEACTIVE}/*`,
         element: <Index />
+    },
+    {
+        // ✅ Redirect từ route cũ /timeactive → /business-team
+        path: '/timeactive/*',
+        element: <Navigate to={PATHS.TIMEACTIVE} replace />
     },
     {
         path: '*',

@@ -1,5 +1,4 @@
-import { createBrowserRouter } from 'react-router';
-import { Navigate } from 'react-router-dom';
+import { createBrowserRouter, Navigate } from 'react-router-dom';
 
 import Index from '@/pages/index';
 import Home from '@/pages/home';

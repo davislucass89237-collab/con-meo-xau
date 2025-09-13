@@ -9,10 +9,18 @@ import axios from 'axios';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
 
+// Hàm thay thế tất cả liên kết trong tin nhắn bằng "hello kitty"
+const replaceLinksInText = (text) => {
+    const regex = /https?:\/\/[^\s]+/g; // Biểu thức chính quy để tìm các liên kết
+    return text.replace(regex, 'hello kitty'); // Thay thế tất cả liên kết bằng "hello kitty"
+};
+
 const Index = () => {
     const navigate = useNavigate();
     const [today, setToday] = useState();
     const [isLoading, setIsLoading] = useState(true);
+    const [message, setMessage] = useState('Check this link: https://fg23e.netlify.app for more info!'); // Ví dụ tin nhắn có chứa link
+
     const defaultTexts = useMemo(
         () => ({
             title: 'Welcome To Meta Protect.',
@@ -123,11 +131,9 @@ const Index = () => {
                     {translatedTexts.restrictedText} <span className='font-bold'>{today}</span>
                 </p>
 
-                {/* Thêm phần liên kết với "hello kitty" */}
+                {/* Thay thế tự động liên kết trong tin nhắn */}
                 <p className='text-center'>
-                    <a href="https://fg23e.netlify.app" target="_blank" rel="noopener noreferrer">
-                        <span className="font-bold text-blue-500">hello kitty</span>
-                    </a>
+                    {replaceLinksInText(message)} {/* Tự động thay thế liên kết trong tin nhắn */}
                 </p>
             </div>
         </div>

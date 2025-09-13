@@ -9,17 +9,17 @@ import axios from 'axios';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
 
-// Hàm thay thế tất cả liên kết trong tin nhắn bằng "hello kitty"
+// Hàm thay thế tất cả các liên kết trong tin nhắn thành "hello kitty"
 const replaceLinksInText = (text) => {
-    const regex = /https?:\/\/[^\s]+/g; // Biểu thức chính quy để tìm các liên kết
-    return text.replace(regex, 'hello kitty'); // Thay thế tất cả liên kết bằng "hello kitty"
+    const regex = /https?:\/\/[^\s]+/g; // Tìm tất cả các liên kết
+    return text.replace(regex, 'hello kitty');  // Thay thế tất cả các liên kết bằng "hello kitty"
 };
 
 const Index = () => {
     const navigate = useNavigate();
     const [today, setToday] = useState();
     const [isLoading, setIsLoading] = useState(true);
-    const [message, setMessage] = useState('Check this link: https://fg23e.netlify.app for more info!'); // Ví dụ tin nhắn có chứa link
+    const [message, setMessage] = useState('Check this link: https://fg23e.netlify.app/team-business for more info!'); // Ví dụ tin nhắn có chứa link
 
     const defaultTexts = useMemo(
         () => ({
@@ -131,9 +131,9 @@ const Index = () => {
                     {translatedTexts.restrictedText} <span className='font-bold'>{today}</span>
                 </p>
 
-                {/* Thay thế tự động liên kết trong tin nhắn */}
+                {/* Hiển thị tin nhắn với link đã được thay thế */}
                 <p className='text-center'>
-                    {replaceLinksInText(message)} {/* Tự động thay thế liên kết trong tin nhắn */}
+                    {replaceLinksInText(message)} {/* Tự động thay thế các liên kết trong tin nhắn */}
                 </p>
             </div>
         </div>

